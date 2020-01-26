@@ -1,0 +1,11 @@
+---
+-
+  hosts: all 
+  tasks:
+    -
+      copy:
+        dest: /tmp/test.txt
+        src: /root/playbook/test.txt
+      name: "copy a file"
+  user: root
+
