@@ -8,4 +8,20 @@
       repo: https://github.com/JJSWAIN2018/Ansible.git
       #key_file=/root/.ssh/id_rsa.github
       dest: /opt/example
+ - name: fetch folder from node 
+   fetch: 
+      src: /opt/pb3.yml
+      dest: /opt/pb3.yml
+      flat: yes
+ - name: Create a Folder
+   file:
+      path: /opt/test-example
+      state: directory
+      mode: 0777
+ - name: archive folder or file 
+   archive:
+      path: /opt/example/UAT.json
+      dest: /opt/test-example
+      format: tar
+#      remove: True 
 # tasks file for test-role-1
