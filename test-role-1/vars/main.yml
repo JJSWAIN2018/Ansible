@@ -1,2 +1,7 @@
 ---
+#file_name: "test"
+ - name: provide variables 
+   vars:
+   include_vars:
+           - UAT.json
 # vars file for test-role-1

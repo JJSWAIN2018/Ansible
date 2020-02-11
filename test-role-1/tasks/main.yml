@@ -1,27 +1,43 @@
 ---
- - name: copy a file 
-   copy:
-           src: pb3.yml
-           dest: /opt/pb3.yml
- - name: clone a private repository
-   git: 
-      repo: https://github.com/JJSWAIN2018/Ansible.git
-      #key_file=/root/.ssh/id_rsa.github
-      dest: /opt/example
- - name: fetch folder from node 
-   fetch: 
-      src: /opt/pb3.yml
-      dest: /opt/pb3.yml
-      flat: yes
- - name: Create a Folder
-   file:
-      path: /opt/test-example
-      state: directory
-      mode: 0777
- - name: archive folder or file 
-   archive:
-      path: /opt/example/UAT.json
-      dest: /opt/test-example
-      format: tar
+# - name: ansible configGen creation 
+#   template:
+#       src: hello_world.j2
+#       dest: test.properties
+#    vars_files:
+#       - UAT.json
+# - name: copy a file through vars file
+#   copy:
+#    src: "{{file_name}}.txt"
+#    dest: /tmp/{{file_name}}.txt
+
+ - name: ansible configGen 
+   template:
+           src: test.j2
+           dest: /tmp/test.properties
+               
+# - name: copy a file 
+#   copy:
+#           src: pb3.yml
+#           dest: /opt/pb3.yml
+# - name: clone a private repository
+#   git: 
+#      repo: https://github.com/JJSWAIN2018/Ansible.git
+#      #key_file=/root/.ssh/id_rsa.github
+#      dest: /opt/example
+# - name: fetch folder from node 
+#   fetch: 
+#      src: /opt/pb3.yml
+#      dest: /opt/pb3.yml
+#      flat: yes
+# - name: Create a Folder
+#   file:
+#      path: /opt/test-example
+#      state: directory
+#      mode: 0777
+# - name: archive folder or file 
+#   archive:
+#      path: /opt/example/UAT.json
+#      dest: /opt/test-example
+#     format: tar
 #      remove: True 
 # tasks file for test-role-1
