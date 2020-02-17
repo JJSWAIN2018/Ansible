@@ -1,3 +1,4 @@
+#! /bin/sh
 apt update -y 
 apt upgrade -y 
 apt-add-repository ppa:ansible/ansible -y 
