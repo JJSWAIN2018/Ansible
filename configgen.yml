@@ -1,0 +1,59 @@
+---
+- hosts: all
+  vars:
+    templare_source: /tmp/icg/config/template
+    template_destination: /tmp
+  tasks:
+  - name: fetch tarfile from remote to local
+    fetch:
+       src: /tmp/tts_config.tar
+       dest: /tmp/
+       flat: true
+  - name: extract files in local machine
+    unarchive:
+       src: /tmp/******/tmp/tts_config.tar
+       dest: /tmp/
+    delegate_to: localhost
+  - name: get the files in directory structure 
+    find:
+      path: /tmp/icg/config/json
+      patterns: '*.json'
+      recursive: yes
+      file_type: file
+    register: get_fileparttern
+  - name: read the json files to variables
+    include_vars:
+        file: "{{ item.path }}"
+        with_items: '{{ get_fileparttern }}'
+  - name : print the output 
+    debug: 
+      msg: '{{ (item.path | basename ).split(".")[0] }}'
+    with_items: 
+         - "{{ get_fileparttern.files }}"
+  - name: create directory with name of json files
+    file: 
+      path: /tmp{{ (item.path | basename ).split(".")[0]}}
+      state: directory 
+      recurse: yes
+    with_items:    
+         - "{{ get_fileparttern.files }}"
+  - name: Ensure directory strucure exists
+    file:
+      path: '{{ template_destination }}/{{ item.path }}'
+      state: directory
+    with_filetree: '{{ template_source }}'
+    when: item.state == 'directory'
+    register: show_directories
+  - name: print out of directory struture
+    debug:
+       msg: "{{ item.path }}"
+    with_items: 
+        - "{{ show_directories.files }}"
+  - name: Generate ConfigGen 
+    template: 
+       src: '{{ item.path }}'
+       dest: '{{ template_source }}/{{ item.path }}.config'
+    with_filetree: '{{ template_source }}'
+    when: item.state == 'file'
+
+
