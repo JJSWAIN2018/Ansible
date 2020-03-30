@@ -1,0 +1,68 @@
+#- name: Read the json file varibales
+#   include_vars:
+#       file: "{{json_files}}"
+ - name: json and template names
+   set_fact:
+      json_file_name: "{{ json_files | basename }}"
+      j2_file_name: "{{ j2_files | basename }}"
+   delegate_to: localhost
+ - name: set env variables
+   set_fact:
+       env: "{{ json_file_name.split('.')[0]}}"
+   delegate_to: localhost
+ - name: set tempalte output variables
+   set_fact:
+      template_output_file_name: "{{j2_file_name.split('.j2')[0]}}"
+      additional_template_output: "{{j2_file.split('template/')[1]}}"
+ - name: set template additional output variables
+   set_fact:
+      additional_template_output: "{{additional_template_output | dirname}}/"
+ - name: debug cureent variables
+   debug:
+     msg: "{{ output_dir }}{{ json_file_name }}{{ additional_template_output }}"
+ - name: create config directory 
+   file:
+     paths: "{{ output_dir }}/Configs"
+     state: directory 
+     mode: '0755'
+   delegate_to: localhost
+
+ - name: Create env inside config directory 
+   file:
+     paths: "{{ output_dir }}/Configs/{{ env }}"
+     state: directory
+     mode: '0755'
+   delegate_to: localhost
+
+ - name: Create additional dir inside Config
+   file:
+     paths: "{{output_dir}}/Configs/{{env}}/{{additional_template_output}}"
+     state: directory
+     mode: '0755'
+     recurse: yes
+   when: additional_template_output!=""
+   delegate_to: localhost
+
+ - name: Ensure configgen
+   template:
+     src: "{{ j2_files}}"
+     dest: "{{output_dir}}/Configs/{{env}}/{{template_output_file_name}}"
+   when: additinal_template_output == ""
+   ignore_errors: yes
+   delegate_to: localhost
+ - name: Ensure configge from addionaln
+   template:
+     src: "{{ j2_files}}"
+     dest: "{{output_dir}}/Configs/{{env}}/{{additional_template_output}}{{template_output_file_name}}"
+   when: additinal_template_output !== ""
+   ignore_errors: yes
+   delegate_to: localhost
+
+
+
+
+
+
+
+
+

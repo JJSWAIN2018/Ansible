@@ -1,0 +1,57 @@
+# tasks file for common
+# - name: Download from github 
+#   include_tasks: download.yml
+ - name: get json files
+   find:
+     paths: "/root/{{project_dir}}"
+     patterns: "*.json"
+     recurse: yes
+     file_type: file
+   register: get_json_files
+   delegate_to: localhost
+ - name: get j2 files
+   find: 
+     paths: "/root/{{project_dir}}"
+     patterns: "*.j2"
+     recurse: yes
+     file_type: file
+   register: get_j2_files
+   delegate_to: localhost
+ - name: output of get_json_files variable
+   debug:
+     var: get_json_files
+   delegate_to: localhost
+ - name: output of get_j2_files variable
+   debug:
+     var: get_j2_files
+   delegate_to: localhost
+ - name: Get path for for template files
+   find:
+     paths: "/root/{{project_dir}}"
+     recurse: no
+     file_type: directory
+     patterns: "templates" 
+   register: get_templates_directory
+   delegate_to: localhost
+ - name: Print output directory structure 
+   debug:
+      msg: "{{ item }}"
+   with_items:
+       - "{{ get_templates_directory }}"
+   delegate_to: localhost
+
+ - name: Run config files with variabls
+   include_tasks: config.yml
+   vars:
+     output_dir: "{{ project_dir }}"
+     json_files: "{{ item[0].path}}"
+     j2_files: "{{item{1].path}}"
+     template_directory: "{{ get_templates_directory }}"
+   with_nested:
+    - "{get_json_files.files}}"
+    - "{{get_j2_files.files}}"
+
+  # - name: Upload files
+  # include_tasks: upload.yml
+
+
